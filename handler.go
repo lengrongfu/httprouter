@@ -20,7 +20,7 @@ func (r *Router) Head(path string, handle Handle) {
 }
 
 func (r *Router) Post(path string, handle Handle) {
-	r.handle(path, http.MethodHead, handle)
+	r.handle(path, http.MethodPost, handle)
 }
 
 func (r *Router) Put(path string, handle Handle) {
@@ -46,12 +46,20 @@ func (r *Router) Static(path string, staticPath string) {
 }
 
 func (r *Router) handle(path, method string, handle Handle) {
+
+	//type1 := reflect2.TypeOf(handle).Type1()
+	//if type1 != nil && type1.NumIn() > 1 && type1.In(0).String() != "http.ResponseWriter" && type1.In(1).String() != "*http.Request"{
+	//	panic(fmt.Errorf(ErrParamExcessive.Error(),type1.NumIn()))
+	//}
 	path = pathHandler(path)
 	if path == "" {
 		panic(errors.New("path is not nil"))
 	}
 	params, newPath := paramPathHandler(path)
 	if len(params) > 0 {
+		if method != http.MethodGet{
+			panic(fmt.Errorf(ErrHandlerMethod.Error(),method))
+		}
 		key := method + "_" + r.rootPath + newPath
 		paramRouter := ParamRouteHandle{
 			handle: handle,
